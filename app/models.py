@@ -22,7 +22,7 @@ class egenskapstype(db.Model):
     vegobjekttype_id = db.Column(db.Integer, db.ForeignKey('vegobjekttype.id'), nullable=False)
     navn = db.Column(db.String(80), nullable=False)
     datatype = db.Column(db.String(80), nullable=False)
-    viktighet = db.Column(db.Integer, nullable=False)
+    viktighet = db.Column(db.String(80), nullable=False)
     
     def __repr__(self):
         return f"<Egenskapstype {self.navn}>"

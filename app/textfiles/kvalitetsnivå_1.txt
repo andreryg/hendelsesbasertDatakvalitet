@@ -1,0 +1,5 @@
+Vegobjekt
+Egenskaper
+Egengeometri
+Stedfesting
+Relasjoner
