@@ -28,18 +28,76 @@ def add_base_data():
                         if egenskap['id'] < 200000:
                             egenskapstyper.append(egenskapstype(id=egenskap['id'], navn=egenskap['navn'], vegobjekttype_id=type['id'], datatype=egenskap['egenskapstype'], viktighet=egenskap.get('viktighet', 'IKKE_ANGITT')))
             db.session.add_all(egenskapstyper)
-        return 0
-
-        # Add vegkategori
-        if not vegkategori.query.first():
-            print("Filling in vegkategori")
-            vegkategorier = [
-                vegkategori(navn='Riksveg', kortnavn='R'),
-                vegkategori(navn='Fylkesveg', kortnavn='F'),
-                vegkategori(navn='Kommunal veg', kortnavn='K')
-            ]
-            db.session.add_all(vekkategorier)
 
         # Add fylke
         if not fylke.query.first():
             print("Filling in fylke")
+            t = requests.get("https://nvdbapiles.atlas.vegvesen.no/uberiket/api/v1/vegobjekter/945", params={"inkluder": "egenskaper"})
+            if t.status_code == 200:
+                t = t.json()
+                fylker = [fylke(id=f['egenskaper']['11764']['verdi'], navn=f['egenskaper']['11765']['verdi']) for f in t.get('vegobjekter', [])]
+            db.session.add_all(fylker)
+
+        #add vegkategori
+        if not vegkategori.query.first():
+            print("Filling in vegkategori")
+            vegkategorier = [
+                vegkategori(id=1, navn="Europaveg", kortnavn="E"),
+                vegkategori(id=2, navn="Riksveg", kortnavn="R"),
+                vegkategori(id=3, navn="Fylkesveg", kortnavn="F"),
+                vegkategori(id=4, navn="Kommuneveg", kortnavn="K"),
+                vegkategori(id=5, navn="Privat veg", kortnavn="P"),
+                vegkategori(id=6, navn="Skogsveg", kortnavn="S")
+            ]
+            db.session.add_all(vegkategorier)
+
+        # Add vegsystem
+        if not vegsystem.query.first():
+            print("Filling in vegsystem")
+            print("Europaveg")
+            ekskluder_vegnummer = "AND11277!=null"
+            vegnummer_liste = []
+            t = requests.get(f"https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/915?egenskap=11276=19024AND11278=19032{ekskluder_vegnummer}&inkluder=egenskaper&inkluder_egenskaper=basis&antall=1")
+            if t.status_code == 200:
+                t = t.json()
+                antall = t['metadata']['returnert']
+                while antall > 0:
+                    vegnummer = next((i['verdi'] for i in t['objekter'][0]['egenskaper'] if i['id'] == 11277), None)
+                    vegnummer_liste.append(vegnummer)
+                    ekskluder_vegnummer += f"AND11277!={vegnummer}"
+                    t = requests.get(f"https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/915?egenskap=11276=19024AND11278=19032{ekskluder_vegnummer}&inkluder=egenskaper&inkluder_egenskaper=basis&antall=1")
+                    if t.status_code == 200:
+                        t = t.json()
+                        antall = t['metadata']['returnert']
+                    else:
+                        print(t.text)
+                        break
+            vegnummer_liste = sorted(vegnummer_liste)
+            e_vegsystemer = [
+                vegsystem(vegnummer=nr, vegkategori_id=1, vegfase="V") for nr in vegnummer_liste
+            ]
+            db.session.add_all(e_vegsystemer)
+
+            print("Riksveg")
+            ekskluder_vegnummer = "AND11277!=null"
+            vegnummer_liste = []
+            t = requests.get(f"https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/915?egenskap=11276=19025AND11278=19032{ekskluder_vegnummer}&inkluder=egenskaper&inkluder_egenskaper=basis&antall=1")
+            if t.status_code == 200:
+                t = t.json()
+                antall = t['metadata']['returnert']
+                while antall > 0:
+                    vegnummer = next((i['verdi'] for i in t['objekter'][0]['egenskaper'] if i['id'] == 11277), None)
+                    vegnummer_liste.append(vegnummer)
+                    ekskluder_vegnummer += f"AND11277!={vegnummer}"
+                    t = requests.get(f"https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/915?egenskap=11276=19025AND11278=19032{ekskluder_vegnummer}&inkluder=egenskaper&inkluder_egenskaper=basis&antall=1")
+                    if t.status_code == 200:
+                        t = t.json()
+                        antall = t['metadata']['returnert']
+                    else:
+                        print(t.text)
+                        break
+            vegnummer_liste = sorted(vegnummer_liste)
+            r_vegsystemer = [
+                vegsystem(vegnummer=nr, vegkategori_id=2, vegfase="V") for nr in vegnummer_liste
+            ]
+            db.session.add_all(r_vegsystemer)

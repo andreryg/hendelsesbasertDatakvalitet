@@ -111,3 +111,11 @@ class skala(db.Model):
 
     def __repr__(self):
         return f"<Skala {self.id}>"
+    
+class siste_hendelse(db.Model):
+    vegobjekttype_id = db.Column(db.Integer, db.ForeignKey('vegobjekttype.id'), primary_key=True, nullable=False)
+    hendelse_id = db.Column(db.Integer, nullable=False)
+    dato = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+
+    def __repr__(self):
+        return f"<Siste Hendelse {self.hendelse_id} for VT {self.vegobjekttype_id}>"
