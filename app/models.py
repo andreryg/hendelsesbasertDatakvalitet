@@ -42,7 +42,7 @@ class vegsystem(db.Model):
     vegnummer = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return f"<Vegsystem {self.vegsystem}>"
+        return f"<Vegsystem {self.id}>"
     
 class fylke(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

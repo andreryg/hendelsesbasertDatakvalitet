@@ -1,6 +1,8 @@
 from app import db
 from app.models import user, vegobjekttype, egenskapstype, vegkategori, vegsystem, fylke, område, kvalitetsnivå_1, kvalitetsnivå_2, kvalitetsparameter, skala
 import requests
+from sqlalchemy import select
+import tqdm
 
 def add_base_data():
     """
@@ -101,3 +103,43 @@ def add_base_data():
                 vegsystem(vegnummer=nr, vegkategori_id=2, vegfase="V") for nr in vegnummer_liste
             ]
             db.session.add_all(r_vegsystemer)
+
+        # Add område
+        if not område.query.first():
+            print("Filling in område")
+            fylker = fylke.query.all()
+            vegsystemer = db.session.query(
+                vegsystem, vegkategori
+                ).join(
+                    vegsystem, vegkategori.id == vegsystem.vegkategori_id
+                    ).filter(
+                        vegsystem.vegkategori_id.in_([1, 2])
+                        ).all()
+            områder = []
+            for f in tqdm.tqdm(fylker):
+                for vs, vk in vegsystemer:
+                    vref = f"{vk.kortnavn}V{vs.vegnummer}"
+                    t = requests.get(
+                        f"https://nvdbapiles.atlas.vegvesen.no/vegnett/api/v4/veglenkesekvenser?fylke={f.id}&vegsystemreferanse={vref}&antall=1"
+                    )
+                    if t.status_code == 200:
+                        t = t.json()
+                        if t['metadata']['returnert'] > 0:
+                            områder.append(
+                                område(
+                                    navn=f"{f.navn} {vk.kortnavn}V{vs.vegnummer}",
+                                    fylke_id=f.id,
+                                    vegkategori_id=vs.vegkategori_id,
+                                    vegsystem_id=vs.id
+                                )
+                            )
+            for f in fylker:
+                områder.append(
+                    område(
+                        navn=f"{f.navn} Fylkesveg",
+                        fylke_id=f.id,
+                        vegkategori_id=3,
+                        vegsystem_id=None
+                    )
+                )
+            db.session.add_all(områder)
