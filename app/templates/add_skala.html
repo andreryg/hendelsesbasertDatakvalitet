@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Legg til ny skala{% endblock %}
+
+{% block content %}
+    <section id="form">
+        <form method="POST" action="/ny_skala">
+            <label for="skala_navn">Skalanavn:</label>
+            <input type="text" id="skala_navn" name="skala_navn" placeholder="Skriv inn skalanavn" required>
+
+            <label for="område_select">Velg område:</label>
+            <select id="område_select" name="område">
+                <option value="0">Uspesifisert</option>
+                {% for område in områder %}
+                    <option value="{{ område.id }}">{{ område.navn }}</option>
+                {% endfor %}
+            </select>
+            
+            <label for="kvalitetsparameter_select">Velg Kvalitetsparameter:</label>
+            <select id="kvalitetsparameter_select" name="kvalitetsparameter">
+                <option value="0">Uspesifisert</option>
+                {% for hovedelement, kvalitetskomponent, kvalitetsparameter in kvalitetsparametere %}
+                    <option value="{{ kvalitetsparameter.id }}">{{ hovedelement.navn }}.{{ kvalitetskomponent.navn }}.{{ kvalitetsparameter.navn }}</option>
+                {% endfor %}
+            </select>
+            
+            <label for="vegobjekttype_select">Velg vegobjekttype:</label>
+            <select id="vegobjekttype_select" name="vegobjekttype">
+                <option value="0">Uspesifisert</option>
+                {% for vegobjekttype in vegobjekttyper %}
+                    <option value="{{ vegobjekttype.id }}">{{ vegobjekttype.id }} - {{ vegobjekttype.navn }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="egenskapstype_select">Velg egenskapstype:</label>
+            <select id="egenskapstype_select" name="egenskapstype">
+                <option value="0">Uspesifisert</option>
+                {% for egenskapstype in egenskapstyper %}
+                    <option value="{{ egenskapstype.id }}">{{ egenskapstype.id }} - {{ egenskapstype.navn }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="sep_1">Første prosentskille</label>
+            <input type="number" id="sep_1" name="sep_1" required>
+
+            <label for="sep_2">Andre prosentskille</label>
+            <input type="number" id="sep_2" name="sep_2" required>
+
+            <label for="sep_3">Tredje prosentskille</label>
+            <input type="number" id="sep_3" name="sep_3" required>
+
+            <label for="sep_4">Fjerde prosentskille</label>
+            <input type="number" id="sep_4" name="sep_4" required>
+
+            <input type="submit" value="Submit">
+        </form>
+    </section>
+    {{ kvalitetsparametere }}
+    <a href="/">Back to Home</a>
+{% endblock %}

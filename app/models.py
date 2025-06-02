@@ -100,14 +100,15 @@ class kvalitetsmåling(db.Model):
     
 class skala(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    navn = db.Column(db.String(80), nullable=False)
     område_id = db.Column(db.Integer, db.ForeignKey('område.id'), nullable=True)
     kvalitetsparameter_id = db.Column(db.Integer, db.ForeignKey('kvalitetsparameter.id'), nullable=True)
     vegobjekttype_id = db.Column(db.Integer, db.ForeignKey('vegobjekttype.id'), nullable=True)
     egenskapstype_id = db.Column(db.Integer, db.ForeignKey('egenskapstype.id'), nullable=True)
-    sep_1 = db.Column(db.Integer, nullable=False)
-    sep_2 = db.Column(db.Integer, nullable=False)
-    sep_3 = db.Column(db.Integer, nullable=False)
-    sep_4 = db.Column(db.Integer, nullable=False)
+    sep_1 = db.Column(db.Numeric, nullable=False)
+    sep_2 = db.Column(db.Numeric, nullable=False)
+    sep_3 = db.Column(db.Numeric, nullable=False)
+    sep_4 = db.Column(db.Numeric, nullable=False)
 
     def __repr__(self):
         return f"<Skala {self.id}>"
