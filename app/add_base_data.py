@@ -1,5 +1,5 @@
 from app import db
-from app.models import user, vegobjekttype, egenskapstype, vegkategori, vegsystem, fylke, område, kvalitetsnivå_1, kvalitetsnivå_2, kvalitetsparameter, skala
+from app.models import user, vegobjekttype, egenskapstype, vegkategori, vegsystem, fylke, område, hovedelement, kvalitetskomponent, kvalitetsparameter, skala
 import requests
 from sqlalchemy import select
 import tqdm
@@ -143,3 +143,49 @@ def add_base_data():
                     )
                 )
             db.session.add_all(områder)
+
+        # Add hovedelement
+        if not hovedelement.query.first():
+            print("Filling in hovedelement")
+            hovedelementer = [
+                hovedelement(navn="Vegobjekt"),
+                hovedelement(navn="Egenskap"),
+                hovedelement(navn="Egengeometri"),
+                hovedelement(navn="Stedfesting"),
+                hovedelement(navn="Relasjon")
+                ]
+            db.session.add_all(hovedelementer)
+
+        # Add kvalitetskomponent
+        if not kvalitetskomponent.query.first():
+            print("Filling in kvalitetskomponent")
+            kvalitetskomponenter = [
+                kvalitetskomponent(navn="Fullstendighet"),
+                kvalitetskomponent(navn="Konsistens"),
+                kvalitetskomponent(navn="Riktighet"),
+                kvalitetskomponent(navn="Aktualitet"),
+                kvalitetskomponent(navn="Nøyaktighet")
+            ]
+            db.session.add_all(kvalitetskomponenter)
+
+        # Add kvalitetsparameter
+        if not kvalitetsparameter.query.first():
+            print("Filling in kvalitetsparameter")
+            kvalitetsparametere = [
+                kvalitetsparameter(navn="Generell", hovedelement_id=1, kvalitetskomponent_id=1, kvalitetsparameter_id=1),
+                kvalitetsparameter(navn="Dekningsgrad", hovedelement_id=1, kvalitetskomponent_id=1, kvalitetsparameter_id=2),
+                kvalitetsparameter(navn="Unikt registrert", hovedelement_id=1, kvalitetskomponent_id=1, kvalitetsparameter_id=3),
+                kvalitetsparameter(navn="Påkrevd egenskap", hovedelement_id=2, kvalitetskomponent_id=1, kvalitetsparameter_id=1),
+                kvalitetsparameter(navn="Betinga egenskap, Utledbar betingelse", hovedelement_id=2, kvalitetskomponent_id=1, kvalitetsparameter_id=2),
+                kvalitetsparameter(navn="Betinga egenskap, Ikke-utledbar betingelse", hovedelement_id=2, kvalitetskomponent_id=1, kvalitetsparameter_id=3),
+                kvalitetsparameter(navn="Opsjonell egenskap", hovedelement_id=2, kvalitetskomponent_id=1, kvalitetsparameter_id=4),
+                kvalitetsparameter(navn="Generell, Grunnriss (X,Y)", hovedelement_id=3, kvalitetskomponent_id=1, kvalitetsparameter_id=1),
+                kvalitetsparameter(navn="Generell, Høyde (Z)", hovedelement_id=3, kvalitetskomponent_id=1, kvalitetsparameter_id=2),
+                kvalitetsparameter(navn="Generell", hovedelement_id=4, kvalitetskomponent_id=1, kvalitetsparameter_id=1),
+                kvalitetsparameter(navn="Egengeometri, Punkt", hovedelement_id=4, kvalitetskomponent_id=2, kvalitetsparameter_id=2),
+                kvalitetsparameter(navn="Egengeometri, Linje/flate", hovedelement_id=4, kvalitetskomponent_id=2, kvalitetsparameter_id=3),
+                kvalitetsparameter(navn="Morobjekt", hovedelement_id=4, kvalitetskomponent_id=2, kvalitetsparameter_id=4),
+                kvalitetsparameter(navn="Generell", hovedelement_id=5, kvalitetskomponent_id=1, kvalitetsparameter_id=1),
+                kvalitetsparameter(navn="Morobjekt, Må ha mor", hovedelement_id=5, kvalitetskomponent_id=1, kvalitetsparameter_id=2),
+            ]
+            db.session.add_all(kvalitetsparametere)

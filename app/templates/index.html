@@ -1,11 +1,28 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Home</title>
-</head>
+{% extends "base.html" %}
+
+{% block header %}
+    {% block title %}Datakvalitet{% endblock %}
+{% endblock %}
+{% block content %}
 <body>
-    <h1>Welcome to the Home Page</h1>
+    <!-- Header -->
+    <header class="container">
+      <hgroup>
+        <h1>Datakvalitet</h1>
+        <p>Hendelsesbasert overvåking av datakvalitet i NVDB</p>
+      </hgroup>
+    </header>
+    <!-- ./header -->
+
+    <!-- Main content -->
+    <section id="buttons">
+    <p class="grid">
+        <button onclick="location.href='/about'">Om</button>
+        <button class="secondary">Secondary</button>
+        <button class="tertiary">Tertiary</button>
+    </p>
+    </section>
     <a href="/about">Go to About</a>
     <a href="/add_base_data">Add base data</a>
 </body>
-</html>
+{% endblock %}

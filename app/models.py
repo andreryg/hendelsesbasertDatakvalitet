@@ -61,14 +61,14 @@ class område(db.Model):
     def __repr__(self):
         return f"<Område {self.navn}>"
     
-class kvalitetsnivå_1(db.Model):
+class hovedelement(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     navn = db.Column(db.String(80), nullable=False)
 
     def __repr__(self):
         return f"<Kvalitetsnivå 1 {self.navn}>"
     
-class kvalitetsnivå_2(db.Model):
+class kvalitetskomponent(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     navn = db.Column(db.String(80), nullable=False)
 
@@ -78,9 +78,9 @@ class kvalitetsnivå_2(db.Model):
 class kvalitetsparameter(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     navn = db.Column(db.String(80), nullable=False)
-    kvalitetsnivå_1_id = db.Column(db.Integer, db.ForeignKey('kvalitetsnivå_1.id'), nullable=False)
-    kvalitetsnivå_2_id = db.Column(db.Integer, db.ForeignKey('kvalitetsnivå_2.id'), nullable=False)
-    kvalitetsnivå_3_id = db.Column(db.Integer, nullable=False)
+    hovedelement_id = db.Column(db.Integer, db.ForeignKey('hovedelement.id'), nullable=False)
+    kvalitetskomponent_id = db.Column(db.Integer, db.ForeignKey('kvalitetskomponent.id'), nullable=False)
+    kvalitetsparameter_id = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
         return f"<Kvalitetsparameter {self.navn}>"
